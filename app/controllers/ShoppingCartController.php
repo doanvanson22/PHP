@@ -69,6 +69,38 @@ class ShoppingCartController {
         http_response_code(200);
     }
 
+    public function updateCartItem()
+{
+    // Kiểm tra xem session đã được bắt đầu chưa
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start(); // Bắt đầu session nếu chưa được bắt đầu
+    }
+
+    // Kiểm tra xem giỏ hàng đã tồn tại trong session chưa, nếu chưa thì tạo mới
+    if (!isset($_SESSION['cart'])) {
+        $_SESSION['cart'] = [];
+    }
+
+    // Lấy ID sản phẩm và số lượng từ dữ liệu gửi đi
+    $productId = $_POST['productId'];
+    $change = $_POST['quantity'] == '+' ? 1 : -1;
+
+    // Kiểm tra số lượng mới có hợp lệ không
+    if (isset($_SESSION['cart'][$productId])) {
+        $_SESSION['cart'][$productId] += $change;
+        // Nếu số lượng sản phẩm bằng 0, xóa sản phẩm khỏi giỏ hàng
+        if ($_SESSION['cart'][$productId] <= 0) {
+            unset($_SESSION['cart'][$productId]);
+        }
+    }
+
+    // Chuyển hướng về trang giỏ hàng
+    header('Location: /buoi4php/shoppingcart');
+    exit;
+}
+
+    
+
     public function removeCartItem($productId)
     {
         // Kiểm tra xem session đã được bắt đầu chưa
@@ -103,6 +135,7 @@ class ShoppingCartController {
         return $totalPrice;
     }
 
+
     public function checkout()
     {
         // Kiểm tra xem người dùng đã đăng nhập chưa
@@ -123,6 +156,9 @@ class ShoppingCartController {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $address = $_POST['address'] ?? '';
             $phone = $_POST['phone'] ?? '';
+            $email = $_POST['email'] ?? '';
+            $name = $_POST['name'] ?? '';
+            $note = $_POST['note'] ?? '';
 
             // Kiểm tra xem thông tin đã được nhập đầy đủ chưa
             if (!empty($address) && !empty($phone)) {
@@ -137,7 +173,7 @@ class ShoppingCartController {
                 $totalPrice = $this->calculateTotalPrice($_SESSION['cart']); // Tính tổng giá trị đơn hàng
 
                 // Lưu thông tin đơn hàng vào bảng Order
-                $orderId = $orderModel->createOrder($orderDate, $address, $phone, $totalPrice, $accountId);
+                $orderId = $orderModel->createOrder($orderDate, $address, $phone, $totalPrice, $accountId, $note, $email);
 
                 // Lưu chi tiết đơn hàng vào bảng OrderDetail
                 foreach ($_SESSION['cart'] as $productId => $quantity) {
@@ -155,7 +191,26 @@ class ShoppingCartController {
                 $errorMessage = "Vui lòng nhập địa chỉ và số điện thoại.";
             }
         }
+        // Lấy danh sách sản phẩm từ giỏ hàng nếu có
+        $cartItems = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
 
+        // Array to store product information
+        $products = [];
+
+        // Retrieve product information for each item in the cart
+        foreach ($cartItems as $productId => $quantity) {
+            $product = $this->productController->getProductById($productId);
+            if ($product) {
+                // Assuming $product is an object, access its properties using -> notation
+                $products[$productId] = [
+                    'name' => $product->name, // Accessing name property of $product object
+                    'price' => $product->price, // Accessing price property of $product object
+                    'quantity' => $quantity,
+                    'total' => $product->price * $quantity // Tính tổng giá của sản phẩm trong giỏ hàng
+                ];
+            }
+        }
+        $totalPrice = array_sum(array_column($products, 'total'));
         // Hiển thị form nhập thông tin địa chỉ và số điện thoại
         include_once 'app/views/cart/pay_form.php';
     }

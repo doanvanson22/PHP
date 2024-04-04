@@ -22,6 +22,7 @@
 </head>
 
 <body>
+    <h1>thanh toán thành công rồi á đợi tin từ shipper nhé</h1>
     <div id="successAnimation"></div>
     <button id="backButton" onclick="goBack()">Back to Home</button>
 
@@ -37,7 +38,7 @@
         renderer: 'svg',
         loop: false,
         autoplay: true,
-        path: 'buoi4php/app/assets/success.json', // Path to your Lottie JSON file
+        path: '../../../buoi4php/app/assets/success.json', // Path to your Lottie JSON file
         xhrSettings: {
             responseType: 'text' // Set responseType to 'text'
         }

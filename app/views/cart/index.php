@@ -1,3 +1,6 @@
+<?php
+include_once 'app/views/share/header.php'
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -33,9 +36,17 @@
                 <?php foreach ($products as $productId => $productInfo) : ?>
                 <tr>
                     <td><?php echo $productInfo['name']; ?></td>
-                    <td><?php echo $productInfo['quantity']; ?></td>
-                    <td><?php echo $productInfo['price']; ?></td>
-                    <td><?php echo $productInfo['quantity'] * $productInfo['price']; ?></td>
+                    <td>
+                        <form method="post" action="/buoi4php/shoppingcart/updateCartItem">
+                            <input type="hidden" name="productId" value="<?php echo $productId; ?>">
+                            <button type="submit" name="quantity" value="-" class="btn btn-sm btn-danger">-</button>
+                            <?php echo $productInfo['quantity']; ?>
+                            <button type="submit" name="quantity" value="+" class="btn btn-sm btn-success">+</button>
+                        </form>
+                    </td>
+                    <td><?php echo number_format($productInfo['price'], 0, ',', '.'); ?> đ</td>
+                    <td><?php echo  number_format($productInfo['quantity'] * $productInfo['price'], 0, ',', '.'); ?> đ
+                    </td>
                     <td>
                         <!-- Link để xóa sản phẩm khỏi giỏ hàng  -->
                         <a href="/buoi4php/shoppingcart/removeCartItem/<?php echo $productId; ?>"
@@ -48,7 +59,7 @@
         </table>
 
         <p class="mt-3">Tổng số lượng sản phẩm: <?php echo count($cartItems); ?></p>
-        <p>Tổng tiền: <?php echo $totalPrice; ?></p>
+        <p>Tổng tiền: <?php echo number_format($totalPrice, 0, ',', '.'); ?> đ</p>
 
         <?php if (isset($_SESSION['username'])) : ?>
         <!-- Nếu đã đăng nhập, hiển thị nút thanh toán -->
@@ -61,6 +72,13 @@
         <a href="/buoi4php/" class="btn btn-primary">Tiếp tục mua sắm</a>
         <?php endif; ?>
     </div>
+
+
+
 </body>
 
+
 </html>
+<?php
+include_once 'app/views/share/footer.php'
+?>

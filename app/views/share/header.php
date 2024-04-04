@@ -37,6 +37,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="product/add">Thêm mới</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="order/">Đơn hàng</a>
+                    </li>
                     <?php
                             include_once'app/views/share/auth.php';
                     ?>

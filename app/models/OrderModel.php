@@ -7,9 +7,20 @@ class OrderModel {
         $this->conn = $db;
     }
 
-    public function createOrder($orderDate, $address, $phone, $totalPrice, $accountId) {
+    function readAll() {
+        $query = "SELECT * FROM ". $this->table_name;
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+
+        return $stmt;
+
+        
+    }
+
+    public function createOrder($orderDate, $address, $phone, $totalPrice, $accountId, $note, $email) {
         // Tạo câu lệnh SQL để chèn dữ liệu vào bảng `orders`
-        $query = "INSERT INTO " . $this->table_name . " (`Date`, `Address`, `Phone`, `Total`, `AccountId`) VALUES (:orderDate, :address, :phone, :total, :accountId)";
+        $query = "INSERT INTO " . $this->table_name . " (`Date`, `Address`, `Phone`, `Total`, `AccountId`, `note`, `Email`) VALUES (:orderDate, :address, :phone, :total, :accountId, :note, :email)";
                 
         // Chuẩn bị câu lệnh SQL
         $stmt = $this->conn->prepare($query);
@@ -20,8 +31,10 @@ class OrderModel {
         $stmt->bindParam(':phone', $phone);
         $stmt->bindParam(':total', $totalPrice); 
         $stmt->bindParam(':accountId', $accountId);
+        $stmt->bindParam(':note', $note);
+        $stmt->bindParam(':email', $email);
 
-        var_dump($orderDate, $address, $phone, $totalPrice, $accountId);
+        var_dump($orderDate, $address, $phone, $totalPrice, $accountId, $note, $email);
         // Thực thi câu lệnh và kiểm tra kết quả
         if ($stmt->execute()) {
             // Trả về id của đơn hàng mới được tạo

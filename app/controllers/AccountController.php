@@ -85,9 +85,9 @@ class AccountController
 
             if ($account && password_verify($pass, $account->password)) {
                 //đúng tài khoản
-                $_SESSION['username'] = $account->email;
+                $_SESSION['email'] = $account->email;
                 $_SESSION['role'] = $account->role;
-                $_SESSION['name'] = $account->name;
+                $_SESSION['username'] = $account->name;
                 $_SESSION['accountId'] = $account->id; // Đặt accountId vào session
 
                 header ('Location: /buoi4php');

@@ -18,6 +18,15 @@ class AccountModel{
         $result = $stmt->fetch(PDO::FETCH_OBJ);
         return $result;
     }
+    function getAccountById($id){
+        $query = "SELECT * FROM ". $this->table_name." where id = :id";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":id", $id);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_OBJ);
+        return $result;
+    }
 
     function createAccount($email, $name, $hashedPassword, $role='user'){
         $query = "INSERT INTO " . $this->table_name . " (email, password, name, role) VALUES (:email, :password, :name, :role)";
